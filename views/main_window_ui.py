@@ -18,7 +18,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.centralwidget)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.sideBar = QtWidgets.QListWidget(parent=self.centralwidget)
-        self.sideBar.setEnabled(False)
+        self.sideBar.setEnabled(True)
         self.sideBar.setMaximumSize(QtCore.QSize(150, 16777215))
         self.sideBar.setBaseSize(QtCore.QSize(150, 0))
         self.sideBar.setObjectName("sideBar")

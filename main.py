@@ -14,14 +14,24 @@ class MainWindow(QMainWindow):
             "商品管理": self.ui.product,
             "類別管理": self.ui.category,
             "客戶管理": self.ui.customer,
-            "訂單管理": self.ui.order
+            "訂單管理": self.ui.order,
         }
 
+        self.ui.sideBar.addItems([
+            "員工管理",
+            "商品管理",
+            "類別管理",
+            "客戶管理",
+            "訂單管理"
+        ])
+
         self.ui.sideBar.currentTextChanged.connect(self.switch_page)
+
     def switch_page(self, text):
         page = self.page_map.get(text)
         if page:
             self.ui.content_stack.setCurrentWidget(page)
+            print(f"切換到：{text}")
 
 def main():
     app = QApplication(sys.argv)
