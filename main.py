@@ -1,47 +1,33 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QMessageBox
+from PyQt6.QtWidgets import QApplication, QMessageBox
 from database import test_connection
-from views.main_window_ui import Ui_MainWindow
+from views.login_window import LoginWindow
+from views.main_window import MainWindow
+import session
 
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
-        self.setWindowTitle("訂單管理系統")
-        self.page_map = {
-            "員工管理": self.ui.emp,
-            "商品管理": self.ui.product,
-            "類別管理": self.ui.category,
-            "客戶管理": self.ui.customer,
-            "訂單管理": self.ui.order,
-        }
-
-        self.ui.sideBar.addItems([
-            "員工管理",
-            "商品管理",
-            "類別管理",
-            "客戶管理",
-            "訂單管理"
-        ])
-
-        self.ui.sideBar.currentTextChanged.connect(self.switch_page)
-
-    def switch_page(self, text):
-        page = self.page_map.get(text)
-        if page:
-            self.ui.content_stack.setCurrentWidget(page)
-            print(f"切換到：{text}")
 
 def main():
     app = QApplication(sys.argv)
     if not test_connection():
         QMessageBox.critical(None, "連線失敗", "資料庫連線失敗，請檢查.env設定")
         sys.exit(1)
-    
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec())
+
+    while True:
+        login = LoginWindow()
+        if login.exec() != LoginWindow.DialogCode.Accepted:
+            break
+
+        window = MainWindow()
+        window.show()
+        app.exec()
+
+        # 登出時 session 已被清空，繼續迴圈回到登入頁
+        # 直接按 X 關閉時 session 仍有值，結束程式
+        if session.get() is not None:
+            break
+
+    sys.exit(0)
+
 
 if __name__ == "__main__":
     main()
