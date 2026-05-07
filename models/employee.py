@@ -22,12 +22,12 @@ class Employee:
                 return cursor.fetchone()
 
     @staticmethod
-    def create(name, cellphone, address=None, lv=1):
+    def create(name, username, password, cellphone, address=None, lv=1):
         with get_connection(transaction=True) as conn:
             with conn.cursor() as cursor:
                 cursor.execute(
-                    "INSERT INTO employees (name, cellphone, address, lv) VALUES (%s, %s, %s, %s)",
-                    (name, cellphone, address, lv),
+                    "INSERT INTO employees (name, username, password, cellphone, address, lv) VALUES (%s, %s, %s, %s, %s, %s)",
+                    (name, username, _hash(password), cellphone, address, lv),
                 )
                 return cursor.lastrowid
 

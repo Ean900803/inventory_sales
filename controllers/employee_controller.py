@@ -16,7 +16,9 @@ class EmployeeController:
         self.page.load_data(employees)
 
     def _on_add(self):
+        print("進到_on_add")
         dialog = EmpDialog(self.page)
+        print("dialog:: {dialog}")
         if dialog.exec() != EmpDialog.DialogCode.Accepted:
             return
         data = dialog.get_data()

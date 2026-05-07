@@ -14,6 +14,7 @@ class EmpDialog(QDialog):
 
     def _build_ui(self):
         self.name_input = QLineEdit()
+        self.name_input = QLineEdit()
         self.cellphone_input = QLineEdit()
         self.address_input = QLineEdit()
         self.lv_input = QSpinBox()
@@ -27,6 +28,7 @@ class EmpDialog(QDialog):
 
         layout = QFormLayout()
         layout.addRow("姓名", self.name_input)
+        layout.addRow("帳號", self)
         layout.addRow("手機", self.cellphone_input)
         layout.addRow("地址", self.address_input)
         layout.addRow("權限等級", self.lv_input)
@@ -41,7 +43,7 @@ class EmpDialog(QDialog):
 
     def get_data(self):
         return {
-            "name": self.name_input.text().strip(),
+            "username": self.name_input.text().strip(),
             "cellphone": self.cellphone_input.text().strip(),
             "address": self.address_input.text().strip() or None,
             "lv": self.lv_input.value(),

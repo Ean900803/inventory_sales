@@ -16,20 +16,24 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("訂單管理系統")
         self.resize(691, 600)
         self._build_ui()
-        self._connect_signals()
+        self._connect_signals() #進行controller
 
     def _build_ui(self):
-        emp = session.get()
-        self.user_label = QLabel(f"登入者：{emp['name']}" if emp else "")
+        # 透過 session取當前的使用者
+        curEmp = session.get()
+        # 基本上不會是有空字串的狀態
+        self.user_label = QLabel(f"登入者：{curEmp['name']}" if curEmp else "")
         self.btn_logout = QPushButton("登出")
 
+        # 右上的登入狀態
         top_bar = QHBoxLayout()
         top_bar.addStretch()
         top_bar.addWidget(self.user_label)
         top_bar.addWidget(self.btn_logout)
 
+        # 左側的sidebar 可以一個按鈕綁定綁定一個page
         self.sideBar = QListWidget()
-        self.sideBar.setMaximumSize(QSize(150, 16777215))
+        self.sideBar.setMaximumWidth(150)
 
         self.emp = EmpPage()
         self.product = QWidget()
