@@ -91,15 +91,31 @@ QHeaderView::section {
 }
 QHeaderView::section:last { border-right: none; }
 
-QLineEdit, QSpinBox {
+QLineEdit, QTextEdit, QPlainTextEdit, QAbstractSpinBox, QComboBox {
     background-color: white;
+    color: #2c3e50;
     border: 1px solid #dcdfe6;
     border-radius: 4px;
     padding: 6px 8px;
     selection-background-color: #4a90e2;
+    selection-color: white;
 }
-QLineEdit:focus, QSpinBox:focus { border-color: #4a90e2; }
-QLineEdit:disabled, QSpinBox:disabled { background-color: #f0f3f7; color: #8a95a7; }
+QLineEdit:focus, QTextEdit:focus, QPlainTextEdit:focus,
+QAbstractSpinBox:focus, QComboBox:focus { border-color: #4a90e2; }
 
+QLineEdit:disabled, QTextEdit:disabled, QPlainTextEdit:disabled,
+QAbstractSpinBox:disabled, QComboBox:disabled {
+    background-color: #f0f3f7;
+    color: #8a95a7;
+}
+
+QComboBox QAbstractItemView {
+    background-color: white;
+    color: #2c3e50;
+    border: 1px solid #dcdfe6;
+    selection-background-color: #4a90e2;
+    selection-color: white;
+    outline: none;
+}
 QLabel#errorLabel { color: #dc3545; }
 """
