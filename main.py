@@ -1,47 +1,59 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QMessageBox
-from database import test_connection
-from views.main_window_ui import Ui_MainWindow
+from PyQt6.QtWidgets import QApplication, QMessageBox
+from config import DB_CONFIG
+from database import setup_database
+from views.connection_dialog import ConnectionDialog
+from views.login_window import LoginWindow
+from views.main_window import MainWindow
+from views.style import APP_STYLE
+import session
 
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
-        self.setWindowTitle("訂單管理系統")
-        self.page_map = {
-            "員工管理": self.ui.emp,
-            "商品管理": self.ui.product,
-            "類別管理": self.ui.category,
-            "客戶管理": self.ui.customer,
-            "訂單管理": self.ui.order,
-        }
 
-        self.ui.sideBar.addItems([
-            "員工管理",
-            "商品管理",
-            "類別管理",
-            "客戶管理",
-            "訂單管理"
-        ])
+def _ensure_database():
+    """跳出 ConnectionDialog 直到使用者輸入可用的連線（或選擇取消）。"""
+    while True:
+        dialog = ConnectionDialog(defaults=DB_CONFIG)
+        if dialog.exec() != ConnectionDialog.DialogCode.Accepted:
+            return False
+        config = dialog.get_config()
+        try:
+            initialized = setup_database(config)
+        except Exception as e:
+            QMessageBox.critical(None, "連線失敗", f"無法連線或初始化：\n{e}")
+            continue
 
-        self.ui.sideBar.currentTextChanged.connect(self.switch_page)
+        DB_CONFIG.update(config)
+        if initialized:
+            QMessageBox.information(
+                None, "初始化完成",
+                "已建立資料庫並寫入預設管理員：\n\n帳號：admin\n密碼：admin\n\n請登入後立即修改密碼。",
+            )
+        return True
 
-    def switch_page(self, text):
-        page = self.page_map.get(text)
-        if page:
-            self.ui.content_stack.setCurrentWidget(page)
-            print(f"切換到：{text}")
 
 def main():
     app = QApplication(sys.argv)
-    if not test_connection():
-        QMessageBox.critical(None, "連線失敗", "資料庫連線失敗，請檢查.env設定")
-        sys.exit(1)
-    
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec())
+    app.setStyleSheet(APP_STYLE)
+
+    if not _ensure_database():
+        sys.exit(0)
+
+    while True:
+        login = LoginWindow()
+        if login.exec() != LoginWindow.DialogCode.Accepted:
+            break
+
+        window = MainWindow()
+        window.show()
+        app.exec()
+
+        # 登出時 session 已被清空，繼續迴圈回到登入頁
+        # 直接按 X 關閉時 session 仍有值，結束程式
+        if session.get() is not None:
+            break
+
+    sys.exit(0)
+
 
 if __name__ == "__main__":
     main()

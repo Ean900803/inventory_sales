@@ -4,7 +4,9 @@ CREATE TABLE employees (
   cellphone CHAR(10) NOT NULL,
   address VARCHAR(100),
   lv TINYINT NOT NULL DEFAULT 1,
-  resigned_date TIMESTAMP NULL
+  resigned_date TIMESTAMP NULL,
+  username VARCHAR(20) UNIQUE NOT NULL,
+  password VARCHAR(64) NOT NULL
 );
 
 CREATE TABLE categories (
