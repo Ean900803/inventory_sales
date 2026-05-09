@@ -8,10 +8,13 @@ def _hash(password):
 
 class Employee:
     @staticmethod
-    def get_all():
+    def get_all(include_resigned=False):
+        sql = "SELECT * FROM employees"
+        if not include_resigned:
+            sql += " WHERE resigned_date IS NULL"
         with get_connection() as conn:
             with conn.cursor() as cursor:
-                cursor.execute("SELECT * FROM employees WHERE resigned_date IS NULL")
+                cursor.execute(sql)
                 return cursor.fetchall()
 
     @staticmethod
@@ -41,6 +44,15 @@ class Employee:
                 )
 
     @staticmethod
+    def reset_password(emp_id, new_password):
+        with get_connection(transaction=True) as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    "UPDATE employees SET password=%s WHERE id=%s",
+                    (_hash(new_password), emp_id),
+                )
+
+    @staticmethod
     def get_by_credentials(username, password):
         with get_connection() as conn:
             with conn.cursor() as cursor:
@@ -56,5 +68,14 @@ class Employee:
             with conn.cursor() as cursor:
                 cursor.execute(
                     "UPDATE employees SET resigned_date = NOW() WHERE id = %s",
+                    (emp_id,),
+                )
+
+    @staticmethod
+    def restore(emp_id):
+        with get_connection(transaction=True) as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    "UPDATE employees SET resigned_date = NULL WHERE id = %s",
                     (emp_id,),
                 )
